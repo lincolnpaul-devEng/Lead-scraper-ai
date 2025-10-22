@@ -1,151 +1,111 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Layers, BarChart, CheckCircle } from '../components/icons';
+import ShapeLandingHero from '../components/ui/shape-landing-hero';
+import PricingSection from '../components/ui/pricing-section';
+import { PRICING_PLANS } from '../constants';
 import { AnimatedTestimonials } from '../components/ui/animated-testimonials';
 
-const FeatureCard: React.FC<{ icon: React.ReactElement, title: string, description: string }> = ({ icon, title, description }) => (
-    <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-sm border border-slate-200">
-        <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary-100 text-primary-600 mb-4">
-            {React.cloneElement(icon, { className: "h-6 w-6" })}
+const testimonials = [
+    {
+        quote: "LeadScraper AI has been a game-changer for our sales team. We've seen a 300% increase in qualified leads in just the first quarter. The AI enrichment is scarily accurate.",
+        name: "Sarah Johnson",
+        designation: "VP of Sales, Innovate Inc.",
+        src: "https://i.pravatar.cc/150?u=a042581f4e29026704d"
+    },
+    {
+        quote: "As a startup, we need to be efficient with our resources. This tool gives us the power of a full-fledged research team at a fraction of the cost. Highly recommended.",
+        name: "Michael Chen",
+        designation: "CEO, Data Solutions LLC",
+        src: "https://i.pravatar.cc/150?u=a04258114e29026702d"
+    },
+    {
+        quote: "The quality of leads is unparalleled. We're closing bigger deals, faster. The integration with our CRM was seamless, and it has streamlined our entire workflow.",
+        name: "Jessica Rodriguez",
+        designation: "Marketing Director, Creative Minds Agency",
+        src: "https://i.pravatar.cc/150?u=a042581f4e29026706d"
+    }
+];
+
+const FeatureSection = () => (
+    <section className="bg-slate-50 py-20 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+                <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Why LeadScraper AI?</h2>
+                <p className="mt-4 max-w-2xl mx-auto text-lg text-slate-600">
+                    Go beyond simple contact lists. Our platform provides deep, actionable insights.
+                </p>
+            </div>
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div className="text-center">
+                    <div className="inline-flex items-center justify-center h-12 w-12 rounded-md bg-primary-100 text-primary-600">
+                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <h3 className="mt-5 text-lg font-medium text-slate-900">Precision Targeting</h3>
+                    <p className="mt-2 text-base text-slate-600">
+                        Find your ideal customers with dozens of filters, from company size and industry to technology stack and recent funding rounds.
+                    </p>
+                </div>
+                <div className="text-center">
+                    <div className="inline-flex items-center justify-center h-12 w-12 rounded-md bg-primary-100 text-primary-600">
+                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 className="mt-5 text-lg font-medium text-slate-900">AI-Powered Enrichment</h3>
+                    <p className="mt-2 text-base text-slate-600">
+                        Get real-time insights, including company summaries, key personnel, and recent news, to personalize your outreach and boost response rates.
+                    </p>
+                </div>
+                <div className="text-center">
+                    <div className="inline-flex items-center justify-center h-12 w-12 rounded-md bg-primary-100 text-primary-600">
+                         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2V4a2 2 0 012-2h8a2 2 0 012 2v4z"></path></svg>
+                    </div>
+                    <h3 className="mt-5 text-lg font-medium text-slate-900">Streamlined Workflow</h3>
+                    <p className="mt-2 text-base text-slate-600">
+                        Export leads to CSV or seamlessly integrate with your favorite CRM like Salesforce and Hubspot to keep your pipeline full.
+                    </p>
+                </div>
+            </div>
         </div>
-        <h3 className="text-lg font-semibold text-slate-800 mb-2">{title}</h3>
-        <p className="text-slate-600">{description}</p>
-    </div>
+    </section>
 );
 
-const testimonialsData = [
-    {
-      quote:
-        "The attention to detail and innovative features in LeadScraper AI have completely transformed our workflow. This is exactly what we've been looking for.",
-      name: "Sarah Chen",
-      designation: "Product Manager at TechFlow",
-      src: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=500&h=500&auto=format&fit=crop",
-    },
-    {
-      quote:
-        "Implementation was seamless and the results exceeded our expectations. LeadScraper AI's platform flexibility is remarkable.",
-      name: "Michael Rodriguez",
-      designation: "CTO at InnovateSphere",
-      src: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=500&h=500&auto=format&fit=crop",
-    },
-    {
-      quote:
-        "This solution has significantly improved our team's productivity. The intuitive interface makes complex tasks simple.",
-      name: "Emily Watson",
-      designation: "Operations Director at CloudScale",
-      src: "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=500&h=500&auto=format&fit=crop",
-    },
-    {
-      quote:
-        "Outstanding support and robust features. It's rare to find a product that delivers on all its promises like LeadScraper AI.",
-      name: "James Kim",
-      designation: "Engineering Lead at DataPro",
-      src: "https://images.unsplash.com/photo-1636041293178-808a6762ab39?q=80&w=500&h=500&auto=format&fit=crop",
-    },
-    {
-      quote:
-        "The scalability and performance have been game-changing for our organization. Highly recommend to any growing business.",
-      name: "Lisa Thompson",
-      designation: "VP of Technology at FutureNet",
-      src: "https://images.unsplash.com/photo-1624561172888-ac93c696e10c?q=80&w=500&h=500&auto=format&fit=crop",
-    },
-];
+
+const TestimonialSection = () => (
+    <section className="bg-white py-20 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+             <div className="text-center">
+                <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Loved by Growing Teams</h2>
+                <p className="mt-4 max-w-2xl mx-auto text-lg text-slate-600">
+                    Don't just take our word for it. Here's what our customers are saying.
+                </p>
+            </div>
+            <div className="mt-16">
+                <AnimatedTestimonials testimonials={testimonials} />
+            </div>
+        </div>
+    </section>
+);
+
+const HomePricingSection = () => (
+    <section className="bg-slate-50 py-20 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+                <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Simple, Transparent Pricing</h2>
+                <p className="mt-4 max-w-2xl mx-auto text-lg text-slate-600">
+                    Choose the plan that's right for your business. No hidden fees.
+                </p>
+            </div>
+            <PricingSection plans={PRICING_PLANS} />
+        </div>
+    </section>
+);
 
 const HomePage: React.FC = () => {
     return (
-        <div className="bg-white">
-            {/* Hero Section */}
-            <section className="py-20 md:py-32 bg-slate-50">
-                <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">
-                        Automated B2B Lead Generation
-                    </h1>
-                    <h2 className="text-4xl md:text-6xl font-extrabold text-primary-600 tracking-tight mt-2">
-                        with AI-Powered Enrichment
-                    </h2>
-                    <p className="mt-6 max-w-2xl mx-auto text-lg text-slate-600">
-                        Stop wasting time on manual prospecting. Find, qualify, and connect with your ideal customers faster than ever before.
-                    </p>
-                    <div className="mt-8 flex justify-center gap-4">
-                        <Link to="/signup" className="px-8 py-3 text-lg font-semibold text-white bg-primary-600 hover:bg-primary-700 rounded-md shadow-md transform hover:-translate-y-0.5 transition">
-                            Get Started for Free
-                        </Link>
-                        <Link to="/pricing" className="px-8 py-3 text-lg font-semibold text-primary-600 bg-white hover:bg-primary-50 rounded-md border border-slate-300 shadow-md transform hover:-translate-y-0.5 transition">
-                            View Pricing
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
-            {/* Features Section */}
-            <section className="py-20">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-slate-900">Find Your Next Customer, Instantly</h2>
-                        <p className="mt-4 text-lg text-slate-600">Powerful tools to supercharge your sales pipeline.</p>
-                    </div>
-                    <div className="grid md:grid-cols-3 gap-8">
-                        <FeatureCard 
-                            icon={<Search />}
-                            title="Targeted Lead Search"
-                            description="Filter by industry, company size, location, and technology to find laser-targeted leads."
-                        />
-                        <FeatureCard
-                            icon={<Layers />}
-                            title="AI Data Enrichment"
-                            description="Go beyond basic info. Get AI-generated company summaries, key contacts, and buying signals."
-                        />
-                        <FeatureCard
-                            icon={<BarChart />}
-                            title="Actionable Analytics"
-                            description="Track your outreach performance, identify your best lead sources, and optimize your strategy."
-                        />
-                    </div>
-                </div>
-            </section>
-
-            {/* Social Proof Section */}
-            <section className="py-20 bg-slate-50">
-                <div className="container mx-auto px-4">
-                    <div className="text-center">
-                        <h2 className="text-3xl font-bold text-slate-900">Trusted by Sales Teams Worldwide</h2>
-                        <div className="mt-8 flex justify-center space-x-12">
-                           <p className="text-slate-500 font-semibold text-lg">Innovate Inc.</p>
-                           <p className="text-slate-500 font-semibold text-lg">Growth Co.</p>
-                           <p className="text-slate-500 font-semibold text-lg">Solutions LLC</p>
-                           <p className="text-slate-500 font-semibold text-lg">Market Leaders</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Testimonials Section */}
-            <section className="py-10 md:py-20 bg-white overflow-hidden">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-4 md:mb-8">
-                        <h2 className="text-3xl font-bold text-slate-900">What Our Customers Say</h2>
-                        <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">Real stories from sales leaders who trust LeadScraper AI to grow their business.</p>
-                    </div>
-                    <AnimatedTestimonials testimonials={testimonialsData} />
-                </div>
-            </section>
-
-            {/* CTA Section */}
-            <section className="py-20 bg-primary-700 text-white">
-                <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-3xl font-bold">Ready to Grow Your Business?</h2>
-                    <p className="mt-4 text-lg text-primary-200 max-w-2xl mx-auto">
-                        Join thousands of companies who are closing more deals with LeadScraper AI.
-                        Start your free trial today, no credit card required.
-                    </p>
-                    <div className="mt-8">
-                        <Link to="/signup" className="px-8 py-4 text-lg font-semibold text-primary-700 bg-white hover:bg-primary-50 rounded-md shadow-lg transform hover:-translate-y-1 transition">
-                            Start Free Trial
-                        </Link>
-                    </div>
-                </div>
-            </section>
-        </div>
+        <>
+            <ShapeLandingHero />
+            <FeatureSection />
+            <TestimonialSection />
+            <HomePricingSection />
+        </>
     );
 };
 

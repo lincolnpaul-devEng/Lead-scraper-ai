@@ -1,118 +1,81 @@
 
 import React, { useState } from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { useAuth } from '../../App';
-import { Logo, Home, Users, Search, BarChart, Settings, Layers, LifeBuoy, LogOut, ChevronDown, Menu, X } from '../icons';
+import { Link, NavLink } from 'react-router-dom';
+import { Logo, Home, Users, Settings, X } from '../icons';
+import AppHeader from './AppHeader';
 
-interface NavItemProps {
-    to: string;
-    icon: React.ReactElement;
-    children: React.ReactNode;
-    disabled?: boolean;
-}
-
-const NavItem: React.FC<NavItemProps> = ({ to, icon, children, disabled }) => {
-    const baseClasses = "flex items-center px-3 py-2.5 text-sm font-medium rounded-md";
-    const activeClasses = "bg-primary-100 text-primary-700";
-    const inactiveClasses = "text-slate-600 hover:bg-slate-100 hover:text-slate-900";
-    const disabledClasses = "text-slate-400 cursor-not-allowed";
-
-    const content = (
+const SidebarContent: React.FC = () => {
+    const navItems = [
+        { name: 'Dashboard', href: '/dashboard', icon: Home },
+        { name: 'Leads', href: '/leads', icon: Users },
+        { name: 'Settings', href: '/settings', icon: Settings },
+    ];
+    return (
         <>
-            {React.cloneElement(icon, { className: "h-5 w-5 mr-3" })}
-            <span className="flex-1">{children}</span>
-        </>
-    );
-
-    if (disabled) {
-        return <div className={`${baseClasses} ${disabledClasses}`}>{content}</div>;
-    }
-
-    return (
-        <NavLink to={to} className={({ isActive }) => `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}>
-            {content}
-        </NavLink>
-    );
-};
-
-
-const Sidebar: React.FC<{isSidebarOpen: boolean}> = ({ isSidebarOpen }) => {
-    return (
-        <aside className={`fixed inset-y-0 left-0 bg-white border-r border-slate-200 z-50 w-64 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 md:flex md:flex-col`}>
-             <div className="flex items-center justify-center h-16 border-b border-slate-200 px-4">
+            <div className="h-16 flex items-center justify-center px-4 border-b border-slate-200 flex-shrink-0">
                 <Link to="/dashboard" className="flex items-center gap-2 text-primary-600">
-                    <Logo className="h-8 w-auto"/>
-                    <span className="text-xl font-bold text-slate-800">LeadScraper</span>
+                    <Logo className="h-8 w-auto text-primary-600" />
+                    <span className="text-xl font-bold tracking-tight text-slate-800">LeadScraper</span>
                 </Link>
             </div>
-            <div className="flex-1 overflow-y-auto py-4">
-                <nav className="px-2 space-y-1">
-                    <NavItem to="/dashboard" icon={<Home />}>Dashboard</NavItem>
-                    <NavItem to="/leads" icon={<Users />}>Leads</NavItem>
-                    <NavItem to="/search" icon={<Search />} disabled>Search</NavItem>
-                    <NavItem to="/analytics" icon={<BarChart />} disabled>Analytics</NavItem>
-                    <NavItem to="/integrations" icon={<Layers />} disabled>Integrations</NavItem>
-                </nav>
-            </div>
-            <div className="px-2 py-4 border-t border-slate-200">
-                <nav className="space-y-1">
-                    <NavItem to="/help" icon={<LifeBuoy />} disabled>Support</NavItem>
-                    <NavItem to="/settings" icon={<Settings />} disabled>Account</NavItem>
-                </nav>
-            </div>
-        </aside>
+            <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                {navItems.map(item => (
+                    <NavLink
+                        key={item.name}
+                        to={item.href}
+                        className={({ isActive }) =>
+                            `flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                                isActive
+                                    ? 'bg-primary-50 text-primary-600'
+                                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                            }`
+                        }
+                    >
+                        <item.icon className="h-5 w-5 mr-3" />
+                        {item.name}
+                    </NavLink>
+                ))}
+            </nav>
+        </>
     );
 };
 
-const AppHeader: React.FC<{toggleSidebar: () => void}> = ({ toggleSidebar }) => {
-    const { logout } = useAuth();
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    return (
-         <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    <button onClick={toggleSidebar} className="md:hidden text-slate-500 hover:text-slate-700">
-                         <Menu className="h-6 w-6" />
-                    </button>
-                    <div className="flex-1">
-                        {/* Can add breadcrumbs or page title here */}
-                    </div>
-                    <div className="relative">
-                        <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center space-x-2 text-left p-2 rounded-lg hover:bg-slate-100">
-                            <img className="h-8 w-8 rounded-full" src={`https://i.pravatar.cc/150?u=a042581f4e29026704d`} alt="User avatar"/>
-                            <div className="hidden sm:block">
-                                <p className="text-sm font-medium text-slate-800">Jane Doe</p>
-                                <p className="text-xs text-slate-500">Growth Plan</p>
-                            </div>
-                            <ChevronDown className={`h-4 w-4 text-slate-500 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        {dropdownOpen && (
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
-                                <Link to="#" className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">Your Profile</Link>
-                                <button onClick={logout} className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
-                                    Sign out
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </header>
-    );
-};
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [isSidebarOpen, setSidebarOpen] = useState(false);
-    const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
-        <div className="flex h-screen bg-slate-100">
-            <Sidebar isSidebarOpen={isSidebarOpen} />
-            {isSidebarOpen && <div onClick={toggleSidebar} className="fixed inset-0 bg-black/30 z-40 md:hidden"></div>}
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <AppHeader toggleSidebar={toggleSidebar} />
-                <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 lg:p-8">
-                    <div className="container mx-auto">
+        <div className="h-screen flex bg-slate-100 overflow-hidden">
+            {/* Mobile Sidebar Overlay */}
+            {sidebarOpen && (
+                 <div className="fixed inset-0 bg-gray-600 bg-opacity-75 z-30 md:hidden" onClick={() => setSidebarOpen(false)}></div>
+            )}
+
+            {/* Mobile Sidebar */}
+            <div className={`fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out z-40 md:hidden`}>
+                <div className="absolute top-0 right-0 -mr-12 pt-2">
+                    <button type="button" className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" onClick={() => setSidebarOpen(false)}>
+                        <X className="h-6 w-6 text-white" />
+                    </button>
+                </div>
+                <div className="flex flex-col h-full">
+                    <SidebarContent />
+                </div>
+            </div>
+
+            {/* Desktop Sidebar */}
+            <aside className="hidden md:flex md:flex-shrink-0">
+                <div className="flex flex-col w-64">
+                    <div className="flex flex-col h-0 flex-1 bg-white border-r border-slate-200">
+                        <SidebarContent />
+                    </div>
+                </div>
+            </aside>
+
+            <div className="flex flex-col w-0 flex-1 overflow-hidden">
+                 <AppHeader onMenuClick={() => setSidebarOpen(true)} />
+                <main className="flex-1 relative overflow-y-auto focus:outline-none">
+                    <div className="py-8 px-4 sm:px-6 lg:px-8">
                         {children}
                     </div>
                 </main>

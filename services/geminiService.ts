@@ -1,9 +1,38 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { Lead } from '../types';
 
-// FIX: Initialize Gemini API client according to guidelines.
-// The API key is sourced exclusively from environment variables.
+// FIX: Initialize GoogleGenAI with API key from environment variables.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+// FIX: Define a schema for the expected JSON output from the model.
+const leadEnrichmentSchema = {
+    type: Type.OBJECT,
+    properties: {
+        companySummary: {
+            type: Type.STRING,
+            description: 'A brief, one-sentence summary of what the company does.',
+        },
+        keyPersonnel: {
+            type: Type.ARRAY,
+            description: 'A list of 1-2 key people at the company, with their roles.',
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    name: { type: Type.STRING },
+                    role: { type: Type.STRING },
+                },
+                required: ['name', 'role'],
+            },
+        },
+        recentNews: {
+            type: Type.STRING,
+            description: 'A single, recent, and relevant news headline about the company.',
+        },
+    },
+    required: ['companySummary', 'keyPersonnel', 'recentNews'],
+};
+
 
 export interface EnrichedData {
     companySummary: string;
@@ -11,63 +40,39 @@ export interface EnrichedData {
     recentNews: string;
 }
 
-// FIX: Define a response schema for structured JSON output.
-// This provides more reliable parsing than string splitting.
-const enrichmentSchema = {
-    type: Type.OBJECT,
-    properties: {
-        companySummary: {
-            type: Type.STRING,
-            description: "A brief summary of the company."
-        },
-        keyPersonnel: {
-            type: Type.ARRAY,
-            items: {
-                type: Type.OBJECT,
-                properties: {
-                    name: { type: Type.STRING },
-                    role: { type: Type.STRING }
-                },
-                required: ['name', 'role']
-            },
-            description: "A list of 2-3 key personnel with their roles."
-        },
-        recentNews: {
-            type: Type.STRING,
-            description: "One recent news headline about the company."
-        }
-    },
-    required: ['companySummary', 'keyPersonnel', 'recentNews']
-};
-
-
-export const enrichLeadWithAI = async (lead: Lead): Promise<EnrichedData> => {
-    console.log(`Enriching lead for: ${lead.companyName}`);
-
-    // FIX: Removed mock API call logic to adhere to guidelines.
-    // The application should rely on the environment-provided API key.
-    
-    // Real API call
+/**
+ * Enriches a lead with additional information using the Gemini API.
+ * @param lead - The lead to enrich.
+ * @returns Enriched data or null if an error occurs.
+ */
+export const enrichLeadWithGemini = async (lead: Lead): Promise<EnrichedData | null> => {
     try {
-        const prompt = `Provide a brief company summary, a list of 2-3 key personnel with their roles, and one recent news headline for the company: ${lead.companyName}, which is in the ${lead.industry} industry.`;
+        // FIX: Use gemini-2.5-flash for basic text tasks.
+        const model = 'gemini-2.5-flash';
+        const prompt = `Provide enrichment data for the following company: ${lead.companyName}. The company is in the ${lead.industry} industry and their website is ${lead.website}.`;
 
-        // FIX: Use responseSchema for structured JSON output from the Gemini API.
+        // FIX: Call generateContent with the correct parameters and JSON response configuration.
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: model,
             contents: prompt,
             config: {
-                responseMimeType: 'application/json',
-                responseSchema: enrichmentSchema,
-            },
+                responseMimeType: "application/json",
+                responseSchema: leadEnrichmentSchema
+            }
         });
+
+        // FIX: Extract the text response correctly and parse it.
+        const text = response.text;
         
-        // FIX: Parse the JSON response from the API instead of splitting the text.
-        const text = response.text.trim();
-        const jsonData = JSON.parse(text);
-        return jsonData as EnrichedData;
-        
+        if (text) {
+            // The response is a string, which needs to be parsed into a JSON object.
+            const enrichedData: EnrichedData = JSON.parse(text);
+            return enrichedData;
+        }
+
+        return null;
     } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        throw new Error("Failed to enrich lead data with AI.");
+        console.error("Error enriching lead with Gemini:", error);
+        return null;
     }
 };

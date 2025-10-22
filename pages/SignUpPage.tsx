@@ -1,25 +1,47 @@
-
-import React, { FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../App';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Logo } from '../components/icons';
+import { Button } from '../components/ui/button';
+import { supabase } from '../lib/supabase';
 
 const SignUpPage: React.FC = () => {
-    const { login } = useAuth();
-    const navigate = useNavigate();
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
-        // In a real app, you would handle the signup logic here
-        login();
-        navigate('/dashboard');
+        setLoading(true);
+        setError(null);
+        setSuccessMessage(null);
+
+        const { error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: fullName,
+                },
+            },
+        });
+
+        if (error) {
+            setError(error.message);
+        } else {
+            setSuccessMessage("Success! Please check your email for a confirmation link.");
+        }
+        setLoading(false);
     };
+
 
     return (
         <div className="min-h-screen bg-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                <Link to="/" className="flex justify-center text-primary-600">
-                    <Logo className="h-12 w-auto" />
+                <Link to="/" className="flex justify-center">
+                    <Logo className="h-12 w-auto text-primary-600" />
                 </Link>
                 <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900">
                     Create your account
@@ -34,23 +56,34 @@ const SignUpPage: React.FC = () => {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                    <form className="space-y-6" onSubmit={handleSubmit}>
-                        <div>
-                            <label htmlFor="full-name" className="block text-sm font-medium text-slate-700">
+                    <form className="space-y-6" onSubmit={handleSignUp}>
+                         {error && (
+                            <div className="rounded-md bg-red-50 p-4">
+                                <p className="text-sm font-medium text-red-800">{error}</p>
+                            </div>
+                        )}
+                        {successMessage && (
+                            <div className="rounded-md bg-green-50 p-4">
+                                <p className="text-sm font-medium text-green-800">{successMessage}</p>
+                            </div>
+                        )}
+                         <div>
+                            <label htmlFor="name" className="block text-sm font-medium text-slate-700">
                                 Full Name
                             </label>
                             <div className="mt-1">
                                 <input
-                                    id="full-name"
-                                    name="full-name"
+                                    id="name"
+                                    name="name"
                                     type="text"
                                     autoComplete="name"
                                     required
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
                                     className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                 />
                             </div>
                         </div>
-
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-slate-700">
                                 Email address
@@ -62,6 +95,8 @@ const SignUpPage: React.FC = () => {
                                     type="email"
                                     autoComplete="email"
                                     required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                 />
                             </div>
@@ -78,18 +113,36 @@ const SignUpPage: React.FC = () => {
                                     type="password"
                                     autoComplete="new-password"
                                     required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     className="appearance-none block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm placeholder-slate-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                 />
                             </div>
                         </div>
-
+                         <div className="flex items-center">
+                            <input
+                                id="terms-and-privacy"
+                                name="terms-and-privacy"
+                                type="checkbox"
+                                required
+                                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                            />
+                            <label htmlFor="terms-and-privacy" className="ml-2 block text-sm text-gray-900">
+                                I agree to the{' '}
+                                <a href="#" className="font-medium text-primary-600 hover:text-primary-500">
+                                    Terms
+                                </a>{' '}
+                                and{' '}
+                                <a href="#" className="font-medium text-primary-600 hover:text-primary-500">
+                                    Privacy Policy
+                                </a>
+                                .
+                            </label>
+                        </div>
                         <div>
-                            <button
-                                type="submit"
-                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                            >
-                                Create account
-                            </button>
+                            <Button type="submit" className="w-full" disabled={loading}>
+                                {loading ? 'Creating account...' : 'Sign up'}
+                            </Button>
                         </div>
                     </form>
                 </div>
