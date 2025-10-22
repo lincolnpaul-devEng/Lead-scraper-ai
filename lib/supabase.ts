@@ -1,17 +1,17 @@
+
 import { createClient } from '@supabase/supabase-js';
 
-// NOTE: These are placeholder values. In a real environment, these would be
-// securely stored in environment variables and should not be hardcoded.
-const supabaseUrl = 'https://your-project-id.supabase.co';
-const supabaseAnonKey = 'your-public-anon-key';
+// Use Vite's standard for environment variables: VITE_ prefix
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
 
 let supabaseClient;
 
-// Check if the placeholder values are still being used.
-if (supabaseUrl === 'https://your-project-id.supabase.co' || !supabaseUrl || !supabaseAnonKey) {
+// Check if the environment variables are set.
+if (!supabaseUrl || !supabaseAnonKey) {
     console.warn(
         'Supabase URL/Key is not set. Using mock authentication to prevent network errors. ' +
-        'Please replace placeholder values in `lib/supabase.ts` for full functionality.'
+        'Please create a .env file and add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.'
     );
 
     // Create a mock Supabase client. This allows the app to run without network errors.
@@ -25,11 +25,11 @@ if (supabaseUrl === 'https://your-project-id.supabase.co' || !supabaseUrl || !su
             // These mocks provide clear developer feedback on the UI if used.
             signInWithPassword: async () => ({
                 data: { session: null },
-                error: { message: "Supabase not configured. Please add your credentials in lib/supabase.ts" }
+                error: { message: "Supabase not configured. Please add your credentials in a .env file." }
             }),
             signUp: async () => ({
                  data: { session: null },
-                error: { message: "Supabase not configured. Please add your credentials in lib/supabase.ts" }
+                error: { message: "Supabase not configured. Please add your credentials in a .env file." }
             }),
             signOut: async () => ({ error: null }),
         },
